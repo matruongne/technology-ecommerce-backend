@@ -59,16 +59,6 @@ const Product = sequelize.define('Product', {
 			},
 		},
 	},
-	stock: {
-		type: DataTypes.INTEGER,
-		defaultValue: 0,
-		validate: {
-			min: {
-				args: [0],
-				msg: 'Stock must be 0 or greater',
-			},
-		},
-	},
 	thumbnail: {
 		type: DataTypes.STRING(255),
 		allowNull: false,

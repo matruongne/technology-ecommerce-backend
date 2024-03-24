@@ -4,17 +4,16 @@ const Product = require('../model/Product')
 const addToCart = async (req, res) => {
 	const { id } = req.user
 
-	Cart.create(
-		{ ...req.body, UserId: id },
-		{
-			include: [
-				{
-					model: Product,
-				},
-			],
-		}
-	)
-		.then((result) => {
+	Cart.create({ ...req.body, UserId: id })
+		.then(async (response) => {
+			const result = await Cart.findByPk(response.id, {
+				include: [
+					{
+						model: Product,
+					},
+				],
+			})
+
 			res.status(200).json({ result })
 		})
 		.catch((error) => {
@@ -51,13 +50,6 @@ const updateCart = async (req, res) => {
 			where: {
 				id: id,
 			},
-		},
-		{
-			include: [
-				{
-					model: Product,
-				},
-			],
 		}
 	)
 		.then(async () => {
@@ -73,7 +65,16 @@ const updateCart = async (req, res) => {
 const getCartByUser = async (req, res) => {
 	const { id } = req.user
 
-	Cart.findAll({ where: { UserId: id } })
+	Cart.findAll(
+		{
+			include: [
+				{
+					model: Product,
+				},
+			],
+		},
+		{ where: { UserId: id } }
+	)
 		.then((result) => {
 			res.status(200).json(result)
 		})

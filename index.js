@@ -26,6 +26,7 @@ const Product = require('./model/Product')
 const Brand = require('./model/Brand')
 const Cart = require('./model/Cart')
 const Order = require('./model/Order')
+const Inventory = require('./model/Inventory')
 
 const app = express()
 
@@ -143,12 +144,19 @@ sequelize
 
 Category.hasMany(Product)
 Product.belongsTo(Category)
+
 Brand.hasMany(Product)
 Product.belongsTo(Brand)
+
+Inventory.hasMany(Product)
+Product.belongsTo(Inventory)
+
 User.hasOne(Cart)
 Cart.belongsTo(User)
-Cart.hasMany(Product)
-Product.belongsTo(Cart)
+
+Product.hasMany(Cart)
+Cart.belongsTo(Product)
+
 User.hasMany(Order)
 Order.belongsTo(User)
 
