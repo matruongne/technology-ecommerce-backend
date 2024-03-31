@@ -6,7 +6,7 @@ const conversationSchema = new Schema({
 	name: { type: String, lowercase: true, required: false },
 	createAt: { type: Date, default: Date.now },
 	messages: [{ type: mongoose.Types.ObjectId, ref: 'Message' }],
-	users: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
+	users: [{ type: mongoose.Types.ObjectId, ref: 'User_mgo' }],
 })
 
 const Conversation = mongoose.model('Conversation', conversationSchema)

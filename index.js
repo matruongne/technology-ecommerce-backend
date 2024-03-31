@@ -1,6 +1,8 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
+const helmet = require('helmet')
+
 const session = require('express-session')
 const passport = require('passport')
 const crypto = require('crypto')
@@ -19,6 +21,8 @@ const brandRouter = require('./route/Brand')
 const categoryRouter = require('./route/Category')
 const cartRouter = require('./route/Cart')
 const orderRouter = require('./route/Order')
+const userRouter = require('./route/User')
+const postRouter = require('./route/Post')
 
 const User = require('./model/User')
 const Category = require('./model/Category')
@@ -27,6 +31,7 @@ const Brand = require('./model/Brand')
 const Cart = require('./model/Cart')
 const Order = require('./model/Order')
 const Inventory = require('./model/Inventory')
+const OrderItems = require('./model/OrderItem')
 
 const app = express()
 
@@ -40,6 +45,7 @@ opts.jwtFromRequest = cookieExtractor
 opts.secretOrKey = SECRET_KEY
 
 //middleware
+app.use(helmet())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
@@ -62,14 +68,16 @@ app.get('/', (req, res) => {
 	res.json({ status: 'success' })
 })
 
-app.use('/api/conversations', conversationRouter)
+app.use('/api/conversations', isAuth(), conversationRouter)
 app.use('/api/auth', authRouter)
-app.use('/api/products', productRouter)
-app.use('/api/brands', brandRouter)
-app.use('/api/categories', categoryRouter)
+app.use('/api/products', isAuth(), productRouter)
+app.use('/api/brands', isAuth(), brandRouter)
+app.use('/api/categories', isAuth(), categoryRouter)
 app.use('/api/cart', isAuth(), cartRouter)
-app.use('/api/orders', orderRouter)
-orderRouter
+app.use('/api/orders', isAuth(), orderRouter)
+app.use('/api/user', isAuth(), userRouter)
+app.use('/api/post', isAuth(), postRouter)
+
 //Passport strategies
 passport.use(
 	'local',
@@ -156,6 +164,12 @@ Cart.belongsTo(User)
 
 Product.hasMany(Cart)
 Cart.belongsTo(Product)
+
+Order.hasMany(OrderItems)
+OrderItems.belongsTo(Order)
+
+Product.hasOne(OrderItems)
+OrderItems.belongsTo(Product)
 
 User.hasMany(Order)
 Order.belongsTo(User)

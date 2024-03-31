@@ -4,6 +4,7 @@ const crypto = require('crypto')
 const { sanitizeUser } = require('../service/common')
 const SECRET_KEY = 'SECRET_KEY'
 const jwt = require('jsonwebtoken')
+const User_mgo = require('../model/User_mgo')
 
 const createUser = async (req, res) => {
 	try {
@@ -28,6 +29,15 @@ const createUser = async (req, res) => {
 								.status(201)
 								.json(token)
 						})
+						return result
+					})
+					.then(async (result) => {
+						const newUser_mgo = new User_mgo({
+							_id: result.id,
+							...req.body,
+						})
+
+						await newUser_mgo.save()
 					})
 					.catch((error) => {
 						console.error('Failed to create a new record : ', error)

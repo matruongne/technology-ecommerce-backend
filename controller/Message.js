@@ -15,7 +15,7 @@ const createMessage = async (req, res) => {
 		await newMessage.save()
 		//add message to conversation
 		await Conversation.findOneAndUpdate(
-			{ _id: conversation },
+			{ _id: conversationId },
 			{
 				$push: {
 					messages: newMessage,

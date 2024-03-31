@@ -7,9 +7,9 @@ const messageSchema = new Schema({
 	body: { type: String, required: false },
 	image: { type: String, required: false },
 	createdAt: { type: Date, default: Date.now },
-	seen: { type: mongoose.Types.ObjectId, ref: 'User' },
+	seen: { type: mongoose.Types.ObjectId, ref: 'User_mgo' },
 	conversationId: { type: mongoose.Types.ObjectId, ref: 'Conversation' },
-	senderId: { type: mongoose.Types.ObjectId, ref: 'User' },
+	senderId: { type: mongoose.Types.ObjectId, ref: 'User_mgo' },
 })
 
 const Message = mongoose.model('Message', messageSchema)

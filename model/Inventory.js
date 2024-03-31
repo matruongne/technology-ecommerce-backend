@@ -8,13 +8,13 @@ const Inventory = sequelize.define('Inventory', {
 		defaultValue: () => uuidv4().replace(/-/g, '').slice(0, 24),
 		primaryKey: true,
 	},
-	quality: {
+	quantity: {
 		type: DataTypes.INTEGER,
 		defaultValue: 0,
 		validate: {
 			min: {
 				args: [0],
-				msg: 'quality must be 0 or greater',
+				msg: 'quantity must be 0 or greater',
 			},
 		},
 	},

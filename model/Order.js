@@ -10,10 +10,6 @@ const Order = sequelize.define(
 			defaultValue: () => uuidv4().replace(/-/g, '').slice(0, 24),
 			primaryKey: true,
 		},
-		items: {
-			type: DataTypes.JSON,
-			allowNull: false,
-		},
 		totalAmount: {
 			type: DataTypes.DECIMAL(10, 2),
 		},
@@ -41,6 +37,10 @@ const Order = sequelize.define(
 		selectedAddress: {
 			type: DataTypes.JSON,
 			allowNull: false,
+		},
+		deleted: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: false,
 		},
 	},
 	{
