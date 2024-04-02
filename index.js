@@ -15,6 +15,7 @@ const { sequelize } = require('./core/mySqlConnect')
 const { sanitizeUser, cookieExtractor, isAuth } = require('./service/common')
 
 const conversationRouter = require('./route/Conversation')
+const messageRouter = require('./route/Message')
 const authRouter = require('./route/Auth')
 const productRouter = require('./route/Product')
 const brandRouter = require('./route/Brand')
@@ -23,6 +24,7 @@ const cartRouter = require('./route/Cart')
 const orderRouter = require('./route/Order')
 const userRouter = require('./route/User')
 const postRouter = require('./route/Post')
+const commentRouter = require('./route/Comment')
 
 const User = require('./model/User')
 const Category = require('./model/Category')
@@ -77,6 +79,8 @@ app.use('/api/cart', isAuth(), cartRouter)
 app.use('/api/orders', isAuth(), orderRouter)
 app.use('/api/user', isAuth(), userRouter)
 app.use('/api/post', isAuth(), postRouter)
+app.use('/api/message', isAuth(), messageRouter)
+app.use('/api/comment', isAuth(), commentRouter)
 
 //Passport strategies
 passport.use(

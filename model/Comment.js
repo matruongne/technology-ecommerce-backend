@@ -16,7 +16,7 @@ const commentSchema = new Schema({
 		type: mongoose.Types.ObjectId,
 		ref: 'Post',
 	},
-	Commentator: { type: mongoose.Types.ObjectId, ref: 'User_mgo' },
+	commentator: { type: mongoose.Types.ObjectId, ref: 'User_mgo' },
 })
 
 const Comment = mongoose.model('Comment', commentSchema)

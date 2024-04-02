@@ -16,7 +16,7 @@ const postSchema = new Schema(
 			trim: true,
 			required: true,
 		},
-
+		images: [{ type: String, required: false }],
 		poster: { type: mongoose.Types.ObjectId, ref: 'User_mgo', required: true },
 		comments: [
 			{

@@ -3,9 +3,6 @@ const { createConversation, getConversation } = require('../controller/Conversat
 const { createMessage } = require('../controller/Message')
 const router = express.Router()
 
-router
-	.get('/conversation', getConversation)
-	.post('/conversation', createConversation)
-	.post('/message', createMessage)
+router.get('/', getConversation).post('/', createConversation).post('/message', createMessage)
 
 module.exports = router

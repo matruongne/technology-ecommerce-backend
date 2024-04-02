@@ -1,8 +1,11 @@
+const Comment = require('../model/Comment')
 const Post = require('../model/Post')
+var ObjectId = require('mongoose').Types.ObjectId
 
 const CreatePost = async (req, res) => {
 	try {
-		const { title, text, poster } = req.body
+		const { title, text } = req.body
+		const { id: poster } = req.user
 
 		const newPost = new Post({ title, text, poster })
 
@@ -37,22 +40,30 @@ const getAllPosts = async (req, res) => {
 	try {
 		const [count, rows] = await Promise.all([
 			Post.countDocuments(queryOptions),
-			Post.find().sort(queryOptions.sort).skip(queryOptions.skip).limit(queryOptions.limit),
+			Post.aggregate()
+				.addFields({ _commentsCount: { $size: '$comments' } })
+				.sort(queryOptions.sort)
+				.skip(queryOptions.skip || 0)
+				.limit(queryOptions.limit || 25)
+				.lookup({
+					from: 'comments',
+					localField: 'comments',
+					foreignField: '_id',
+					as: 'comments',
+				})
+				.project({ _id: 1, title: 1, text: 1, comments: 1, poster: 1, _commentsCount: 1 }),
 		])
 
 		res.set('X-Total-Count', count)
-		res.status(200).json(rows)
+		res.status(200).json({ posts: rows })
 	} catch (error) {
-		console.error('Error creating Post:', error)
-		return res.status(500).json({ message: 'Error creating Post' })
+		console.error('Error get Posts:', error)
+		return res.status(500).json({ message: 'Error get Posts' })
 	}
 }
 
 const getPostsByUserId = async (req, res) => {
 	try {
-		if (!req.user) {
-			return res.status(400).json({ message: 'Missing required fields: id of user' })
-		}
 		const { id } = req.user
 		const posts = await Post.find({ poster: id })
 		return res.status(201).json({ posts })
@@ -67,6 +78,13 @@ const getPostById = async (req, res) => {
 
 	try {
 		const post = await Post.findById({ _id: id })
+			.populate({
+				path: 'comments',
+				populate: {
+					path: 'commentator',
+				},
+			})
+			.populate('poster')
 		res.status(200).json({ post })
 	} catch (err) {
 		res.status(400).json(err)
@@ -81,8 +99,7 @@ const updatePost = async (req, res) => {
 		const post = await Post.findByIdAndUpdate({ _id: id }, { ...req.body }, { new: true })
 		if (post) {
 			res.status(200).json({ message: 'success', post })
-		}
-		res.status(200).json({ message: 'failed' })
+		} else res.status(200).json({ message: 'failed' })
 	} catch (err) {
 		res.status(400).json(err)
 	}
@@ -92,13 +109,24 @@ const deletePost = async (req, res) => {
 	const { id } = req.params
 
 	try {
-		const post = await Post.findByIdAndDelete({ _id: id })
-		if (post) {
-			res.status(200).json({ message: 'success', post })
-		}
-		res.status(200).json({ message: 'failed' })
+		const post = await Post.aggregate()
+			.match({ _id: new ObjectId(id) })
+			.project({ _id: 1, comments: 1 })
+
+		console.log(post)
+
+		await Promise.all([
+			Comment.deleteMany({ _id: { $in: post[0].comments } }),
+			Post.deleteOne({ _id: id }),
+		])
+			.then(() => {
+				res.status(200).json({ message: 'success' })
+			})
+			.catch((err) => {
+				res.status(400).json({ message: 'failed', err })
+			})
 	} catch (err) {
-		res.status(400).json(err)
+		res.status(400).json({ message: 'failed', err })
 	}
 }
 module.exports = { CreatePost, getAllPosts, getPostsByUserId, getPostById, updatePost, deletePost }
