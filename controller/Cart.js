@@ -42,9 +42,22 @@ const deleteFromCart = async (req, res) => {
 const updateCart = async (req, res) => {
 	const { id } = req.params
 
+	const { quantity, color, decrement } = req.body
+	if (decrement) {
+		await Cart.decrement('quantity', {
+			by: quantity,
+			where: { id: id },
+		})
+	} else {
+		await Cart.increment('quantity', {
+			by: quantity,
+			where: { id: id },
+		})
+	}
+
 	Cart.update(
 		{
-			...req.body,
+			colors: color,
 		},
 		{
 			where: {
@@ -53,7 +66,13 @@ const updateCart = async (req, res) => {
 		}
 	)
 		.then(async () => {
-			const result = await Cart.findByPk(id)
+			const result = await Cart.findByPk(id, {
+				include: [
+					{
+						model: Product,
+					},
+				],
+			})
 			res.status(200).json(result)
 		})
 		.catch((err) => {

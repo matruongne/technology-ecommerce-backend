@@ -37,7 +37,10 @@ const createUser = async (req, res) => {
 							...req.body,
 						})
 
-						await newUser_mgo.save()
+						await newUser_mgo.save().catch((error) => {
+							console.error('Failed to create a new record : ', error)
+							res.status(400).json({ error: error })
+						})
 					})
 					.catch((error) => {
 						console.error('Failed to create a new record : ', error)
@@ -52,6 +55,7 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
 	console.log('req:', req.user)
+	console.log(req.message)
 	res
 		.cookie('jwt', req.user, {
 			expires: new Date(Date.now() + 3600000),

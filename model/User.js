@@ -16,6 +16,7 @@ const User = sequelize.define(
 		addresses: { type: DataTypes.JSON },
 		name: { type: DataTypes.STRING },
 		salt: { type: DataTypes.BLOB },
+		images: { type: DataTypes.JSON },
 		resetPasswordToken: { type: DataTypes.STRING, defaultValue: '' },
 	},
 	{

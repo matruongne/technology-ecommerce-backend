@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const helmet = require('helmet')
+const http = require('http')
 
 const session = require('express-session')
 const passport = require('passport')
@@ -34,11 +35,17 @@ const Cart = require('./model/Cart')
 const Order = require('./model/Order')
 const Inventory = require('./model/Inventory')
 const OrderItems = require('./model/OrderItem')
+const path = require('path')
 
 const app = express()
 
-const mongoDB = 'mongodb://localhost:27017/conversation'
+const server = http.createServer(app)
+
+const mongoDB1 = 'mongodb://localhost:27017/conversation'
+const mongoDB =
+	'mongodb+srv://matruong052003:Truong.123@cluster0.puwkhhj.mongodb.net/conversation?retryWrites=true&w=majority&appName=Cluster0'
 const PORT = process.env.PORT || 3100
+const PORT_SOCKET = 3200
 
 const SECRET_KEY = 'SECRET_KEY'
 // JWT options
@@ -120,7 +127,6 @@ passport.use(
 passport.use(
 	'jwt',
 	new JwtStrategy(opts, async function (jwt_payload, done) {
-		console.log({ jwt_payload })
 		try {
 			const user = await User.findOne({ where: { id: jwt_payload.id } })
 			if (user) {
@@ -135,7 +141,6 @@ passport.use(
 )
 // this creates session variable req.user on being called from callbacks
 passport.serializeUser(function (user, cb) {
-	console.log('serialize', user)
 	process.nextTick(function () {
 		return cb(null, { id: user.id, role: user.role })
 	})
@@ -143,7 +148,6 @@ passport.serializeUser(function (user, cb) {
 
 // this changes session variable req.user when called from authorized request
 passport.deserializeUser(function (user, cb) {
-	console.log('de-serialize', user)
 	process.nextTick(function () {
 		return cb(null, user)
 	})
@@ -183,5 +187,31 @@ mongoose
 	.connect(mongoDB)
 	.then(() => console.log('Connect to database mongoDB successfully'))
 	.catch((error) => console.error('Unable to connect to the database:', error))
+
+const socketIo = require('socket.io')(server, {
+	cors: {
+		origin: '*',
+	},
+})
+
+socketIo.on('connection', (socket) => {
+	console.log(`User Connected: ${socket.id}`)
+
+	socket.on('join_room', (data) => {
+		socket.join(data)
+		console.log(`User with ID: ${socket.id} joined room: ${data}`)
+	})
+
+	socket.on('send_message', (data) => {
+		console.log(data)
+		socket.to(data.room).emit('receive_message', data)
+	})
+
+	socket.on('disconnect', () => {
+		console.log('User Disconnected', socket.id)
+	})
+})
+
+server.listen(PORT_SOCKET, () => console.log(`Server is Quannected to Port ${PORT_SOCKET}`))
 
 app.listen(PORT, () => console.log(`Server Running on Port: http://localhost:${PORT}`))

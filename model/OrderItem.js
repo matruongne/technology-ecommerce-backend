@@ -20,6 +20,9 @@ const OrderItems = sequelize.define(
 				},
 			},
 		},
+		color: {
+			type: DataTypes.JSON,
+		},
 	},
 	{
 		timestamps: true,

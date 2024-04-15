@@ -29,16 +29,22 @@ const createConversation = async (req, res) => {
 
 const getConversation = async (req, res) => {
 	try {
-		// const { user1Id, user2Id } = req.body
-		// console.log(user1Id, user2Id)
+		const { userId } = req.params
+		console.log(userId)
 		// Check if a conversation with these users already exists
-		// const existingConversation = await Conversation.findOne({
-		// 	users: { $all: [user1Id, user2Id] },
-		// })
+		const existingConversation = await Conversation.findOne({
+			users: userId,
+		})
+			.populate('users')
+			.populate({
+				path: 'messages',
+				populate: {
+					path: 'senderId',
+				},
+			})
+		// const existingConversation = await Conversation.find().populate('users').populate('messages')
 
-		const existingConversation2 = await Conversation.find().populate('users').populate('messages')
-
-		return res.status(201).json({ conversation: existingConversation2 })
+		return res.status(201).json({ conversation: existingConversation })
 	} catch (err) {
 		console.error('Error get conversation:', err)
 		return res.status(500).json({ message: 'Error get conversation' })

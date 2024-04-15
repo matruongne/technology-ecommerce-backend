@@ -24,6 +24,25 @@ const createProduct = async (req, res) => {
 		})
 }
 
+const searchProduct = async (req, res) => {
+	try {
+		console.log(req.query)
+
+		const products = await Product.findAll({
+			where: {
+				title: {
+					[Op.like]: `%${req.query.title}%`,
+				},
+			},
+		})
+
+		res.status(200).json(products)
+	} catch (error) {
+		console.error('Error searching products:', error)
+		res.status(400).json({ message: error })
+	}
+}
+
 const getProductById = async (req, res) => {
 	const { id } = req.params
 
@@ -86,7 +105,7 @@ const getAllProduct = async (req, res) => {
 		console.log(queryOptions)
 		const { count, rows } = await Product.findAndCountAll({
 			...whereClause,
-			queryOptions,
+			...queryOptions,
 		})
 
 		res.set('X-Total-Count', count)
@@ -95,4 +114,5 @@ const getAllProduct = async (req, res) => {
 		res.status(400).json(err)
 	}
 }
-module.exports = { createProduct, getAllProduct, getProductById, updateProduct }
+
+module.exports = { createProduct, getAllProduct, getProductById, updateProduct, searchProduct }

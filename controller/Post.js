@@ -4,10 +4,9 @@ var ObjectId = require('mongoose').Types.ObjectId
 
 const CreatePost = async (req, res) => {
 	try {
-		const { title, text } = req.body
 		const { id: poster } = req.user
 
-		const newPost = new Post({ title, text, poster })
+		const newPost = new Post({ ...req.body, poster })
 
 		await newPost.save()
 		return res.status(201).json({ message: 'success' })
@@ -51,10 +50,27 @@ const getAllPosts = async (req, res) => {
 					foreignField: '_id',
 					as: 'comments',
 				})
-				.project({ _id: 1, title: 1, text: 1, comments: 1, poster: 1, _commentsCount: 1 }),
+				.lookup({
+					from: 'user_mgos',
+					localField: 'poster',
+					foreignField: '_id',
+					as: 'poster',
+					pipeline: [{ $project: { name: 1, _id: 1, images: 1, email: 1 } }],
+				})
+				.project({
+					_id: 1,
+					title: 1,
+					text: 1,
+					comments: 1,
+					poster: 1,
+					images: 1,
+					_commentsCount: 1,
+					createdAt: 1,
+				}),
 		])
 
 		res.set('X-Total-Count', count)
+
 		res.status(200).json({ posts: rows })
 	} catch (error) {
 		console.error('Error get Posts:', error)

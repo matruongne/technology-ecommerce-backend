@@ -13,16 +13,37 @@ const getOrdersByUser = async (req, res) => {
 			include: [
 				{
 					model: OrderItems,
+					include: [Product],
 				},
 			],
 		},
-		{ UserId: id }
+		{ where: { UserId: id } }
 	)
 		.then((result) => {
 			res.status(200).json({ result })
 		})
 		.catch((error) => {
-			console.error('Failed to create a new record : ', error)
+			console.error('Failed to get a record : ', error)
+			res.status(400).json({ error: error })
+		})
+}
+const getOrdersById = async (req, res) => {
+	const { id } = req.params
+	console.log('id', id)
+	Order.findOne({
+		where: { id: id },
+		include: [
+			{
+				model: OrderItems,
+				include: [Product],
+			},
+		],
+	})
+		.then((result) => {
+			res.status(200).json({ result })
+		})
+		.catch((error) => {
+			console.error('Failed to get a record : ', error)
 			res.status(400).json({ error: error })
 		})
 }
@@ -36,7 +57,7 @@ const createOrder = async (req, res) => {
 		const newOrder = await Order.create({ ...req.body, UserId: id }, { transaction })
 
 		for (const item of orderDetails) {
-			const { ProductId, quantity } = item
+			const { ProductId, quantity, color } = item
 
 			const product = await Product.findOne({
 				include: [{ model: Inventory }],
@@ -67,7 +88,7 @@ const createOrder = async (req, res) => {
 				transaction,
 			})
 
-			await OrderItems.create({ OrderId: newOrder.id, ProductId, quantity }, { transaction })
+			await OrderItems.create({ OrderId: newOrder.id, ProductId, quantity, color }, { transaction })
 		}
 
 		await transaction.commit()
@@ -113,7 +134,7 @@ const deleteOrder = async (req, res) => {
 const updateOrder = async (req, res) => {
 	try {
 		const { id } = req.params
-		const updateOrder = await Order.update(
+		await Order.update(
 			{
 				...req.body,
 			},
@@ -122,9 +143,10 @@ const updateOrder = async (req, res) => {
 					id: id,
 				},
 			}
-		)
-		if (updateOrder[0] === 0) res.status(200).json({ message: 'Error', updateOrder })
-		else res.status(200).json({ message: 'Success', updateOrder })
+		).then(async () => {
+			const result = await Order.findByPk(id)
+			res.status(200).json(result)
+		})
 	} catch (err) {
 		res.status(400).json(err)
 	}
@@ -158,4 +180,11 @@ const getAllOrders = async (req, res) => {
 	}
 }
 
-module.exports = { createOrder, getOrdersByUser, deleteOrder, updateOrder, getAllOrders }
+module.exports = {
+	createOrder,
+	getOrdersByUser,
+	deleteOrder,
+	getOrdersById,
+	updateOrder,
+	getAllOrders,
+}

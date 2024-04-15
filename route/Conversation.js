@@ -1,8 +1,7 @@
 const express = require('express')
 const { createConversation, getConversation } = require('../controller/Conversation')
-const { createMessage } = require('../controller/Message')
 const router = express.Router()
 
-router.get('/', getConversation).post('/', createConversation).post('/message', createMessage)
+router.get('/:userId', getConversation).post('/', createConversation)
 
 module.exports = router

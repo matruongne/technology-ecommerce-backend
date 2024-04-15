@@ -4,10 +4,12 @@ const {
 	getAllProduct,
 	getProductById,
 	updateProduct,
+	searchProduct,
 } = require('../controller/Product')
 const router = express.Router()
 
 router
+	.get('/search', searchProduct)
 	.get('/', getAllProduct)
 	.get('/:id', getProductById)
 	.post('/', createProduct)
