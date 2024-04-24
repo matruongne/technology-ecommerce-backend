@@ -1,6 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const helmet = require('helmet')
+// const helmet = require('helmet')
 const cors = require('cors')
 const http = require('http')
 
@@ -41,11 +41,11 @@ const app = express()
 
 const server = http.createServer(app)
 
-const mongoDB = 'mongodb://localhost:27017/conversation'
-const mongoDB1 =
+const mongoDB1 = 'mongodb://localhost:27017/conversation'
+const mongoDB =
 	'mongodb+srv://matruong052003:Truong.123@cluster0.puwkhhj.mongodb.net/conversation?retryWrites=true&w=majority&appName=Cluster0'
 const PORT = process.env.PORT || 3300
-const PORT_SOCKET = 3200
+const PORT_SOCKET = process.env.PORT_SOCKET || 3200
 
 const SECRET_KEY = 'SECRET_KEY'
 // JWT options
@@ -56,7 +56,8 @@ opts.secretOrKey = SECRET_KEY
 //middleware
 
 app.use(express.static(path.resolve(__dirname, 'build')))
-app.use(helmet())
+
+// app.use(helmet())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
@@ -91,6 +92,9 @@ app.use('/api/user', isAuth(), userRouter)
 app.use('/api/post', isAuth(), postRouter)
 app.use('/api/message', isAuth(), messageRouter)
 app.use('/api/comment', isAuth(), commentRouter)
+
+// this line we add to make react router work in case of other routes doesnt match
+app.get('*', (req, res) => res.sendFile(path.resolve('build', 'index.html')))
 
 //Passport strategies
 passport.use(
@@ -215,6 +219,6 @@ mongoose
 	.then(() => console.log('Connect to database mongoDB successfully'))
 	.catch((error) => console.error('Unable to connect to the database:', error))
 
-server.listen(PORT_SOCKET, () => console.log(`Server is Quannected to Port ${PORT_SOCKET}`))
+server.listen(PORT_SOCKET, () => console.log(`Server socket is Quannected to Port ${PORT_SOCKET}`))
 
 app.listen(PORT, () => console.log(`Server Running on Port: http://localhost:${PORT}`))
