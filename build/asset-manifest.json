@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/static/css/main.431f4c5e.css",
+    "main.js": "/static/js/main.b2ffd68e.js",
+    "static/media/SignUpImg.jpg": "/static/media/SignUpImg.341b50ed574c9f7ea450.jpg",
+    "static/media/SignInImage.jpg": "/static/media/SignInImage.f480b4e56ae997547fc8.jpg",
+    "static/media/headphone.png": "/static/media/headphone.6abce47d92bd0cd186c1.png",
+    "static/media/macbook.png": "/static/media/macbook.4cca2e0e286afbff0db2.png",
+    "static/media/vr.png": "/static/media/vr.8e6768c52dc1a63084d6.png",
+    "static/media/bg_user.jpeg": "/static/media/bg_user.15ed2ac71f0c4c3b1ec0.jpeg",
+    "static/media/dark-mode-button.png": "/static/media/dark-mode-button.c5b620c1550b3c201b56.png",
+    "static/media/light-mode-button.png": "/static/media/light-mode-button.9ed4504ff522dfde699a.png",
+    "static/media/watch.png": "/static/media/watch.fcc1b6970324a0652ffc.png",
+    "static/media/slick.svg": "/static/media/slick.2630a3e3eab21c607e21.svg",
+    "static/media/slick.eot": "/static/media/slick.a4e97f5a2a64f0ab1323.eot",
+    "static/media/slick.ttf": "/static/media/slick.c94f7671dcc99dce43e2.ttf",
+    "static/media/slick.woff": "/static/media/slick.295183786cd8a1389865.woff",
+    "index.html": "/index.html",
+    "main.431f4c5e.css.map": "/static/css/main.431f4c5e.css.map",
+    "main.b2ffd68e.js.map": "/static/js/main.b2ffd68e.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.431f4c5e.css",
+    "static/js/main.b2ffd68e.js"
+  ]
+}

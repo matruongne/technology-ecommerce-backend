@@ -54,6 +54,8 @@ opts.jwtFromRequest = cookieExtractor
 opts.secretOrKey = SECRET_KEY
 
 //middleware
+
+app.use(express.static(path.resolve(__dirname, 'build')))
 app.use(helmet())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
