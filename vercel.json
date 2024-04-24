@@ -106,6 +106,5 @@
 			"src": "/(.+)",
 			"dest": "build/$1"
 		}
-	],
-	"rewrites": [{ "source": "/(.*)", "destination": "index.js" }]
+	]
 }
