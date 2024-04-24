@@ -1,7 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const cors = require('cors')
 const helmet = require('helmet')
+const cors = require('cors')
 const http = require('http')
 
 const session = require('express-session')
@@ -41,10 +41,10 @@ const app = express()
 
 const server = http.createServer(app)
 
-const mongoDB1 = 'mongodb://localhost:27017/conversation'
-const mongoDB =
+const mongoDB = 'mongodb://localhost:27017/conversation'
+const mongoDB1 =
 	'mongodb+srv://matruong052003:Truong.123@cluster0.puwkhhj.mongodb.net/conversation?retryWrites=true&w=majority&appName=Cluster0'
-const PORT = process.env.PORT || 3100
+const PORT = process.env.PORT || 3300
 const PORT_SOCKET = 3200
 
 const SECRET_KEY = 'SECRET_KEY'
@@ -62,11 +62,12 @@ app.use(cookieParser())
 app.use(
 	session({
 		secret: 'keyboard cat',
-		resave: false, // don't save session if unmodified
+		resave: true, // don't save session if unmodified
 		saveUninitialized: false, // don't create session until something stored
 	})
 )
 app.use(passport.authenticate('session'))
+
 app.use(
 	cors({
 		exposedHeaders: ['X-Total-Count'],
@@ -182,12 +183,6 @@ OrderItems.belongsTo(Product)
 User.hasMany(Order)
 Order.belongsTo(User)
 
-sequelize.sync()
-mongoose
-	.connect(mongoDB)
-	.then(() => console.log('Connect to database mongoDB successfully'))
-	.catch((error) => console.error('Unable to connect to the database:', error))
-
 const socketIo = require('socket.io')(server, {
 	cors: {
 		origin: '*',
@@ -211,6 +206,12 @@ socketIo.on('connection', (socket) => {
 		console.log('User Disconnected', socket.id)
 	})
 })
+
+sequelize.sync()
+mongoose
+	.connect(mongoDB)
+	.then(() => console.log('Connect to database mongoDB successfully'))
+	.catch((error) => console.error('Unable to connect to the database:', error))
 
 server.listen(PORT_SOCKET, () => console.log(`Server is Quannected to Port ${PORT_SOCKET}`))
 
